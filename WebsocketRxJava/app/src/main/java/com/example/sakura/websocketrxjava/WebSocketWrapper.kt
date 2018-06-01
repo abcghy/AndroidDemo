@@ -1,5 +1,6 @@
 package com.example.sakura.websocketrxjava
 
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.WebSocket
@@ -61,10 +62,7 @@ class WebSocketWrapper {
         val wsInstanceMap : HashMap<WebSocketConfiguration, WebSocketInstance> = HashMap()
 
         fun getInstance(config: WebSocketConfiguration): WebSocketInstance {
-            val wsInstance = wsInstanceMap[config]
-            if (wsInstance != null) {
-                return wsInstance
-            }
+            wsInstanceMap[config].also { if (it != null) return it }
 
             val request = Request.Builder()
                     .url(config.url)
@@ -80,17 +78,37 @@ class WebSocketWrapper {
         }
 
         fun clear() {
-
+            for (wsInstance in wsInstanceMap) {
+//                wsInstance.value.disconnect()
+                wsInstance.value.clear()
+            }
+            wsInstanceMap.clear()
         }
     }
 }
 
+enum class WebSocketStatus {
+    NOT_CONNECTED,
+    CONNECTING,
+    CONNECTED
+}
+
+/**
+ * 需要自己维护状态
+ */
 class WebSocketInstance {
     var request: Request
     var httpClient: OkHttpClient
     var listener: WebSocketListener? = null
 
     var websocket: WebSocket? = null
+
+    private var _lastTimeConnect: Long = 0L
+    private var _lastTimeDisconnect: Long = 0L
+    var websocketStatus: WebSocketStatus = WebSocketStatus.NOT_CONNECTED
+//    set(value) {
+//        field = value
+//    }
 
     constructor(builder: WebSocketInstance.Builder) {
         this.request = assertNull(builder.request)
@@ -104,10 +122,23 @@ class WebSocketInstance {
     }
 
     fun connect() {
+//        if (System.currentTimeMillis() - _lastTimeConnect < 5000) {
+//             不能连接，太早了
+//        }
+//
+//        _lastTimeConnect = System.currentTimeMillis()
+        realConnect()
+    }
+
+    private fun realConnect() {
         websocket = httpClient.newWebSocket(request, assertNull(listener))
     }
 
     fun disconnect() {
+        realDisconnect()
+    }
+
+    private fun realDisconnect() {
         websocket?.close(1000, "Normal Close")
     }
 
@@ -116,7 +147,7 @@ class WebSocketInstance {
     }
 
     fun clear() {
-
+        websocket = null
     }
 
     class Builder {

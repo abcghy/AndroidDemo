@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
         val instance = WebSocketWrapper.getInstance(
                 WebSocketConfiguration.Builder()
-                        .url("ws://192.168.10.1:8999")
+                        .url(BuildConfig.URL)
                         .id(1)
                         .build()
         )

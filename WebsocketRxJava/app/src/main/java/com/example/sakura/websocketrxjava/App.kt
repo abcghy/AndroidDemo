@@ -9,15 +9,29 @@ class App: Application() {
 
         registerActivityLifecycleCallbacks(object: GroundListener() {
             override fun onForeground(activity: Activity?) {
-                WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
-                        .url("ws://192.168.10.1:8999")
-                        .id(1)
-                        .build())
+                if (isNeedWS(activity)) {
+                    WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
+                            .url(BuildConfig.URL)
+                            .id(1)
+                            .build())
+                            .apply { connect() }
+                }
             }
 
             override fun onBackground(activity: Activity?) {
-
+                if (isNeedWS(activity)) {
+                    WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
+                            .url(BuildConfig.URL)
+                            .id(1)
+                            .build())
+                            .apply { disconnect() }
+                }
             }
         })
+    }
+
+    fun isNeedWS(activity: Activity?) : Boolean {
+        activity?.takeIf { it !is SplashActivity }?.apply { return true }
+        return false
     }
 }
