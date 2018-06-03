@@ -3,6 +3,7 @@
     package="com.example.sakura.websocketrxjava">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".App"
@@ -22,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name="cn.gailvlun.gll.listener.ReachabilityReceiver" />
     </application>
 
 </manifest>

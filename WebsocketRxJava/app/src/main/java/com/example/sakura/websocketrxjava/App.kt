@@ -14,7 +14,7 @@ class App: Application() {
                             .url(BuildConfig.URL)
                             .id(1)
                             .build())
-                            .apply { connect() }
+                            .apply { connect(WebSocketPriority.BACKGROUND) }
                 }
             }
 
@@ -24,7 +24,7 @@ class App: Application() {
                             .url(BuildConfig.URL)
                             .id(1)
                             .build())
-                            .apply { disconnect() }
+                            .apply { disconnect(WebSocketPriority.BACKGROUND) }
                 }
             }
         })

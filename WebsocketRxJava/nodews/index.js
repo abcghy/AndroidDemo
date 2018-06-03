@@ -6,6 +6,7 @@ const wss = new WebSocket.Server({
 
 wss.on('connection', function connection(ws, request) {
     console.log(request.connection.remoteAddress)
+    ws.send("Bravo! Open!")
 
     ws.on('message', function incoming(message) {
       console.log('received: %s', message);
