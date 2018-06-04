@@ -13,6 +13,7 @@ class App: Application() {
                     WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
                             .url(BuildConfig.URL)
                             .id(1)
+                            .token("1")
                             .build())
                             .apply { connect(WebSocketPriority.BACKGROUND) }
                 }
@@ -23,6 +24,7 @@ class App: Application() {
                     WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
                             .url(BuildConfig.URL)
                             .id(1)
+                            .token("1")
                             .build())
                             .apply { disconnect(WebSocketPriority.BACKGROUND) }
                 }

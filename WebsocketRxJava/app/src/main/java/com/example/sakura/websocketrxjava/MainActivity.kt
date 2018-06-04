@@ -27,6 +27,7 @@ class MainActivity : AppCompatActivity() {
                 WebSocketConfiguration.Builder()
                         .url(BuildConfig.URL)
                         .id(1)
+                        .token("1")
                         .build()
         )
         instance.connect(WebSocketPriority.LOG)
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * todo: When you switch from wifi to 4g, there will be a little not_connected time.
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onReachabilityEvent(reachabilityEvent: ReachabilityEvent) {
         Log.d("test", "reachabilityEvent: ${reachabilityEvent.reachabilityStatus}")
@@ -59,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
                         .url(BuildConfig.URL)
                         .id(1)
+                        .token("1")
                         .build())
                         .run { this.disconnect(WebSocketPriority.NETWORK) }
             }
@@ -66,6 +71,7 @@ class MainActivity : AppCompatActivity() {
                 WebSocketWrapper.getInstance(WebSocketConfiguration.Builder()
                         .url(BuildConfig.URL)
                         .id(1)
+                        .token("1")
                         .build())
                         .run { this.connect(WebSocketPriority.NETWORK) }
             }

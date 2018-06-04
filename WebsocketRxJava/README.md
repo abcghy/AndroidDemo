@@ -7,6 +7,7 @@ require:
 - if anything happen to backend or the network have some error, retry 3 times for every 5 seconds
 
 ## What's next
+- Refresh token
 - Get default instance when you set it
 - Clear all instance
 - Test for this project

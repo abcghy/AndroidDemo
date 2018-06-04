@@ -19,10 +19,12 @@ fun <T> assertNull(any: T?): T {
 class WebSocketConfiguration {
     var id: Int
     var url: String
+    var token: String
 
     private constructor(builder: WebSocketConfiguration.Builder) {
         id = assertNull(builder.id)
         url = assertNull(builder.url)
+        token = assertNull(builder.token)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -32,16 +34,17 @@ class WebSocketConfiguration {
         if (other !is WebSocketConfiguration) {
             return false
         }
-        return id == other.id && url == other.url
+        return id == other.id
     }
 
     override fun hashCode(): Int {
-        return id.hashCode() + url.hashCode()
+        return id.hashCode()
     }
 
     class Builder {
         var id: Int? = null
         var url: String? = null
+        var token: String? = null
 
         fun id(id: Int): Builder {
             this.id = id
@@ -50,6 +53,11 @@ class WebSocketConfiguration {
 
         fun url(url: String): Builder {
             this.url = url
+            return this
+        }
+
+        fun token(token: String): Builder {
+            this.token = token
             return this
         }
 
@@ -138,6 +146,7 @@ class WebSocketInstance {
                 // 重连
                 retryDisposable = Observable.intervalRange(0, 3, 5, 5, TimeUnit.SECONDS)
                         .observeOn(AndroidSchedulers.mainThread())
+                        // todo
                         .subscribe { connect(WebSocketPriority.RETRY) }
             }
         }
@@ -146,6 +155,15 @@ class WebSocketInstance {
             super.onClosing(webSocket, code, reason)
 
             Log.d("test", "onClosing() code: $code")
+            // My company use 4001 for auth failed, you may have another condition
+            if (code == 4001) {
+                // refresh token by sync, which is acquire the newest authorization
+                // this is child thread, so not gonna block UI
+                // refreshToken();
+
+                // retry again
+                connect(WebSocketPriority.RETRY)
+            }
         }
 
         override fun onMessage(webSocket: WebSocket?, text: String?) {
@@ -265,7 +283,7 @@ class WebSocketInstance {
             return
         }
 //        Log.d("test", "close results: ${websocket?.close(1000, "Normal Close")}" )
-        Log.d("test", "close results: ${websocket?.cancel()}" )
+        websocket?.cancel()
     }
 
     fun send(msg: String) {
